@@ -1,9 +1,5 @@
 # scheduler
-Task scheduler / run loop in C++
-
-# Compiler Explorer
-
-WIP version: https://www.godbolt.org/z/75YdzP
+Task scheduler / run loop in C++17.
 
 # Requirements
 
@@ -11,10 +7,11 @@ Requirements levels as defined in [RFC 2119](https://www.ietf.org/rfc/rfc2119.tx
 
 ## MUST
 
-* Support running tasks based on class member functions.
-* Support running tasks based on free functions.
-* Support running tasks based on lambda expressions.
-* Support a configurable/changeable scheduling strategy.
+* Support running tasks based on:
+  * Class member functions,
+  * Free functions,
+  * Lambda expressions.
+* Support a configurable scheduling strategy.
 * Support the configuration of the amount of workers.
 
 ## SHOULD
@@ -24,4 +21,4 @@ Requirements levels as defined in [RFC 2119](https://www.ietf.org/rfc/rfc2119.tx
 
 ## MAY
 
-...
+* Support small object optimization for task objects.
