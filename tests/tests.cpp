@@ -36,28 +36,28 @@ TEST_SUITE("task") {
   TEST_CASE_TEMPLATE("Default construction", T, void(), int()) {
     task<T> t;
 
-    CHECK(t.is_empty());
+    CHECK(t);
     CHECK_THROWS(t());
   }
 
   TEST_CASE_TEMPLATE("Default construction", T, void(int), int(int)) {
     task<T> t;
 
-    CHECK(t.is_empty());
+    CHECK(t);
     CHECK_THROWS(t(42));
   }
 
   TEST_CASE_TEMPLATE("Default construction", T, void(int, float), int(int, float)) {
     task<T> t;
 
-    CHECK(t.is_empty());
+    CHECK(t);
     CHECK_THROWS(t(42, 3.14f));
   }
 
   TEST_CASE_TEMPLATE("Non-default construction", T, void(), int()) {
     task<T> t{make_lambda<T>()};
 
-    CHECK(!t.is_empty());
+    CHECK(!t);
 
     t();
   }
@@ -65,7 +65,7 @@ TEST_SUITE("task") {
   TEST_CASE_TEMPLATE("Non-default construction", T, void(int), int(int)) {
     task<T> t{make_lambda<T>()};
 
-    CHECK(!t.is_empty());
+    CHECK(!t);
 
     t(42);
   }
@@ -73,7 +73,7 @@ TEST_SUITE("task") {
   TEST_CASE_TEMPLATE("Non-default construction", T, void(int, float), int(int, float)) {
     task<T> t{make_lambda<T>()};
 
-    CHECK(!t.is_empty());
+    CHECK(!t);
 
     t(42, 3.14f);
   }
@@ -84,10 +84,10 @@ TEST_SUITE("task") {
 
     task<T> t2{std::move(t1)};
 
-    CHECK(!t2.is_empty());
+    CHECK(!t2);
     t2();
 
-    CHECK(t1.is_empty());
+    CHECK(t1);
     CHECK_THROWS(t1());
   }
 
@@ -97,10 +97,10 @@ TEST_SUITE("task") {
 
     task<T> t2{std::move(t1)};
 
-    CHECK(!t2.is_empty());
+    CHECK(!t2);
     t2(42);
 
-    CHECK(t1.is_empty());
+    CHECK(t1);
     CHECK_THROWS(t1(42));
   }
 
@@ -110,10 +110,10 @@ TEST_SUITE("task") {
 
     task<T> t2{std::move(t1)};
 
-    CHECK(!t2.is_empty());
+    CHECK(!t2);
     t2(42, 3.14f);
 
-    CHECK(t1.is_empty());
+    CHECK(t1);
     CHECK_THROWS(t1(42, 3.14f));
   }
 
@@ -122,14 +122,14 @@ TEST_SUITE("task") {
     task<T> t2;
 
     t1();
-    REQUIRE(t2.is_empty());
+    REQUIRE(t2);
 
     t2 = std::move(t1);
 
-    CHECK(!t2.is_empty());
+    CHECK(!t2);
     t2();
 
-    CHECK(t1.is_empty());
+    CHECK(t1);
     CHECK_THROWS(t1());
   }
 
@@ -138,14 +138,14 @@ TEST_SUITE("task") {
     task<T> t2;
 
     t1(42);
-    REQUIRE(t2.is_empty());
+    REQUIRE(t2);
 
     t2 = std::move(t1);
 
-    CHECK(!t2.is_empty());
+    CHECK(!t2);
     t2(42);
 
-    CHECK(t1.is_empty());
+    CHECK(t1);
     CHECK_THROWS(t1(42));
   }
 
@@ -154,14 +154,14 @@ TEST_SUITE("task") {
     task<T> t2;
 
     t1(42, 3.14f);
-    REQUIRE(t2.is_empty());
+    REQUIRE(t2);
 
     t2 = std::move(t1);
 
-    CHECK(!t2.is_empty());
+    CHECK(!t2);
     t2(42, 3.14f);
 
-    CHECK(t1.is_empty());
+    CHECK(t1);
     CHECK_THROWS(t1(42, 3.14f));
   }
 
