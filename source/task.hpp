@@ -28,28 +28,28 @@ class task<Ret(Args...)> {
     }
   };
 
-  std::unique_ptr<concept_t> model_t_;
+  std::unique_ptr<concept_t> model_;
 
 public:
   constexpr task() = default;
 
   template<typename Function>
   explicit constexpr task(Function&& function)
-    : model_t_{std::make_unique<model_t<std::decay_t<Function>>>(std::forward<Function>(function))} {
+    : model_{std::make_unique<model_t<std::decay_t<Function>>>(std::forward<Function>(function))} {
   }
 
   task(task&&) noexcept = default;
   task& operator=(task&&) noexcept = default;
 
   inline __attribute__((always_inline)) bool is_empty() const noexcept {
-    return !model_t_;
+    return !model_;
   }
 
   Ret operator()(Args&&... args) {
-    if (is_empty()) {
+    if (!model_) {
       throw std::logic_error("task not initialized");
     }
 
-    return model_t_->invoke(std::move(args)...);
+    return model_->invoke(std::move(args)...);
   }
 };
