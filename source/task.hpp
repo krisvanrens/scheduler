@@ -41,7 +41,7 @@ public:
   task(task&&) noexcept = default;
   task& operator=(task&&) noexcept = default;
 
-  inline __attribute__((always_inline)) bool is_empty() const noexcept {
+  explicit operator bool() const noexcept {
     return !model_;
   }
 
