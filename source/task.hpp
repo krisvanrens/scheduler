@@ -10,8 +10,8 @@ class task;
 template<typename Ret, typename... Args>
 class task<Ret(Args...)> {
   struct concept_t {
-    virtual ~concept_t()          = default;
-    virtual Ret invoke(Args&&...) = 0;
+    virtual ~concept_t()        = default;
+    virtual Ret invoke(Args...) = 0;
   };
 
   template<typename Function>
@@ -23,8 +23,9 @@ class task<Ret(Args...)> {
       : function_{std::forward<Function>(function)} {
     }
 
-    Ret invoke(Args&&... args) {
-      return std::invoke(function_, std::move(args)...);
+    // NOTE: args are not forwarding references here, model_t is a concrete type.
+    Ret invoke(Args... args) {
+      return std::invoke(function_, std::forward<Args>(args)...);
     }
   };
 
@@ -45,11 +46,12 @@ public:
     return !model_;
   }
 
-  Ret operator()(Args&&... args) {
+  template<typename... Args_>
+  Ret operator()(Args_&&... args) {
     if (!model_) {
       throw std::logic_error("task not initialized");
     }
 
-    return model_->invoke(std::move(args)...);
+    return model_->invoke(std::forward<Args_>(args)...);
   }
 };
