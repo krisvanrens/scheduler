@@ -47,6 +47,10 @@ constexpr typename unwrap_function<Function>::args_t make_args() {
   return {};
 }
 
+struct test_t {
+  int value = {};
+};
+
 TYPE_TO_STRING(void());
 TYPE_TO_STRING(int());
 TYPE_TO_STRING(void(int));
@@ -97,6 +101,105 @@ TEST_SUITE("task") {
 
     CHECK(t1);
     CHECK_THROWS(std::apply(t1, make_args<T>()));
+  }
+
+  TEST_CASE("Task argument propagation (matched signatures)") {
+    SUBCASE("value") {
+      task<void(test_t)> t{[](test_t arg) { CHECK(arg.value == 42); }};
+
+      t(test_t{42});
+
+      test_t x1{42};
+      t(x1);
+
+      const test_t x2{42};
+      t(x2);
+    }
+
+    SUBCASE("const lvalue reference") {
+      task<void(const test_t&)> t{[](const test_t& arg) { CHECK(arg.value == 42); }};
+
+      t(test_t{42});
+
+      test_t x1{42};
+      t(x1);
+
+      const test_t x2{42};
+      t(x2);
+    }
+
+    SUBCASE("lvalue reference") {
+      task<void(test_t&)> t{[](test_t& arg) { CHECK(arg.value == 42); }};
+
+      test_t x{42};
+      t(x);
+    }
+
+    SUBCASE("rvalue reference") {
+      task<void(test_t&&)> t{[](test_t&& arg) { CHECK(arg.value == 42); }};
+
+      t(test_t{42});
+
+      test_t x{42};
+      t(std::move(x));
+    }
+  }
+
+  TEST_CASE("Task argument propagation (mismatched signatures)") {
+    SUBCASE("const lvalue reference to value") {
+      task<void(test_t)> t{[](const test_t &arg) { CHECK(arg.value == 42); }};
+
+      t(test_t{42});
+
+      test_t x1{42};
+      t(x1);
+
+      const test_t x2{42};
+      t(x2);
+    }
+
+    SUBCASE("rvalue reference to value") {
+      task<void(test_t)> t{[](test_t &&arg) { CHECK(arg.value == 42); }};
+
+      t(test_t{42});
+
+      const test_t x{42};
+      t(std::move(x));
+    }
+
+    SUBCASE("value to const lvalue reference") {
+      task<void(const test_t&)> t{[](test_t arg) { CHECK(arg.value == 42); }};
+
+      t(test_t{42});
+
+      test_t x1{42};
+      t(x1);
+
+      const test_t x2{42};
+      t(x2);
+    }
+
+    SUBCASE("value to lvalue reference") {
+      task<void(test_t&)> t{[](test_t arg) { CHECK(arg.value == 42); }};
+
+      test_t x{42};
+      t(x);
+    }
+
+    SUBCASE("lvalue reference to rvalue reference") {
+      task<void(test_t&&)> t{[](test_t arg) { CHECK(arg.value == 42); }};
+
+      t(test_t{42});
+    }
+
+    SUBCASE("const lvalue reference to rvalue reference") {
+      task<void(test_t&&)> t{[](const test_t& arg) { CHECK(arg.value == 42); }};
+
+      t(test_t{42});
+
+      test_t x{42};
+      t(std::move(x));
+    }
   }
 
 } // TEST_SUITE
