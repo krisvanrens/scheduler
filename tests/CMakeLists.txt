@@ -1,6 +1,6 @@
-add_executable(tests tests.cpp)
+add_executable(task task.cpp)
 target_link_libraries(
-  tests
+  task
   PRIVATE
   project_warnings
   project_options
